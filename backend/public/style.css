@@ -1,0 +1,168 @@
+@font-face {
+    font-family: 'sharp_grotesk_bold_25regular';
+    src: url('/fonts/sharpgroteskbold25-regular-webfont.woff2') format('woff2'), url('../fonts/sharpgroteskbold25-regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'sharp_grotesk_book_20regular';
+    src: url('/fonts/sharpgroteskbook20-regular-webfont.woff2') format('woff2'), url('../fonts/sharpgroteskbook20-regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'sharp_grotesk_medium_20Rg';
+    src: url('/fonts/sharpgroteskmedium20-regular-webfont.woff2') format('woff2'), url('../fonts/sharpgroteskmedium20-regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'sharp_grotesk_smbold_08Rg';
+    src: url('/fonts/sharpgrotesksmbold08-regular-webfont.woff2') format('woff2'), url('../fonts/sharpgrotesksmbold08-regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+a {
+    text-decoration: none;
+    outline: none;
+    border: none;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+body {
+    background: linear-gradient(to right bottom, #F05A61, #FFDA31);
+    background-size: 100%;
+    background-repeat: no-repeat;
+    font-family: 'sharp_grotesk_medium_20Rg', sans-serif;
+    font-size: .85em;
+    line-height: 1.6em;
+    letter-spacing: 0.1em;
+}
+
+body:before {
+    content: '';
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    z-index: -1;
+    background: linear-gradient(to right bottom, rgba(#F05A61, .75), rgba(#FFDA31, .5));
+}
+
+body .container, body .container-fluid {
+    height: 95vh;
+    position: relative;
+}
+
+body .container #content, body .container-fluid #content {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+    width: 100%;
+    text-align: center;
+    max-height: 90%;
+    padding: 30px;
+}
+
+.monitorFrame {
+    height: 100vh;
+    background-color: #e2e2e2;
+    text-align: center;
+}
+
+.monitorFrame .stats {
+    position: absolute;
+    top: 100px;
+    width: 300px;
+    height: 600px;
+}
+
+.monitorFrame .stats h4 {
+    margin-top: 20px;
+}
+
+.monitorFrame #statsLeft.stats {
+    left: 10px;
+}
+
+.monitorFrame .qrcode {
+    padding: 20px;
+    background-color: #ffffff;
+    margin: 20px auto;
+}
+
+.monitorFrame #statsRight.stats {
+    right: 10px;
+}
+
+.monitorFrame .stat {
+    font-weight: bold;
+}
+
+.monitorFrame .qrcode img {
+    margin: auto;
+}
+
+#statsPlayerCountLeft, #statsPlayerCountRight {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #333;
+}
+
+.hidden {
+    display: none;
+}
+
+.adminFrame .btn {
+    margin: 10px;
+}
+
+.adminFrame .score {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.playerFrame #controllerOutput {
+    font-size: 2em;
+    max-width: 200px;
+    margin: 40px auto;
+}
+
+.playerFrame h1 {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.playerFrame h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.playerFrame .side {
+    font-weight: bold;
+}
+
+.playerFrame .help {
+    font-weight: bold;
+    margin: 50px auto 10px auto;
+}
+
+.playerFrame #intro, .playerFrame #playing, .playerFrame #errorField {
+    text-align: center;
+}
