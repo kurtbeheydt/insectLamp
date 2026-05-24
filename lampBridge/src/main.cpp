@@ -119,7 +119,7 @@ void printSetup() {
                 String ipaddress = "Ip: " + String(localIp[0]) + "." + String(localIp[1]) + "." + String(localIp[2]) + "." + String(localIp[3]);
                 u8g2->drawStr(0, 46, ipaddress.c_str());
 
-                if (!mqttClient.connected()) {
+                if (mqttClient.connected()) {
                     u8g2->drawStr(0, 58, "MQTT: Ok");
                 } else {
                     u8g2->drawStr(0, 58, "MQTT: not Ok");
