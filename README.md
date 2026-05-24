@@ -1,0 +1,93 @@
+# insectLamp
+
+IoT-controlled insect lamp: a Node.js backend with a web UI publishes power-LED
+brightness levels over MQTT; an ESP32 *bridge* receives them and forwards them
+over LoRa to one or more remote ESP32 *lamp units* that drive the actual power
+LEDs via PWM.
+
+## Architecture
+
+```
+  ┌──────────────┐   MQTT     ┌──────────────────┐   LoRa    ┌──────────────┐
+  │ Web UI       │ ────────►  │ lampBridge       │ ────────► │ lampUnit     │
+  │ (browser)    │            │ (ESP32 + SX1262) │           │ (ESP32 +     │
+  │              │            │   - WiFi/MQTT    │           │   SX1262)    │
+  └──────┬───────┘            │   - LoRa TX      │           │   - LoRa RX  │
+         │                    │   - drives 4 PWM │           │   - drives 4 │
+         │ HTTP/JSON          │     channels     │           │     PWM      │
+         ▼                    └──────────────────┘           │     channels │
+  ┌──────────────┐                                           └──────────────┘
+  │ backend      │
+  │ (Node.js +   │
+  │  Express +   │
+  │  MQTT bus)   │
+  └──────────────┘
+```
+
+Topics:
+- `insectLamp/webUpdate` — UI → backend → bridge; sets PWM values.
+- `insectLamp/unitUpdate` — backend → bridge; broadcast of current PWM state.
+- `insectLamp/init` — bridge → backend on first connect; triggers state replay.
+
+## Layout
+
+| Path           | What                                                    |
+|----------------|---------------------------------------------------------|
+| `backend/`     | Node.js server + browser UI (Express, mqtt.js, jQuery). |
+| `lampBridge/`  | PlatformIO firmware for the WiFi/MQTT ↔ LoRa bridge.    |
+| `lampUnit/`    | PlatformIO firmware for a LoRa-only lamp unit.          |
+| `design/`      | Hardware design (LED holder).                           |
+| `docs/`        | Reference photos and pinouts.                           |
+
+## Hardware
+
+- **Bridge & unit board:** LilyGO T3-S3 (ESP32-S3 + SX1262 LoRa). See
+  `docs/T3-S3.jpg`.
+- **LED driver:** TIP120 Darlington per channel. See `docs/TIP120-Pinout.jpg`.
+- **Power LEDs:** 4 channels, each PWM-driven (8-bit, 10 kHz). Default GPIO map:
+  - Bridge: `42, 46, 45, 41` (LEDC channels `0..3`).
+  - Unit:   `41, 45, 46, 42` (LEDC channels `0..3`).
+
+## Backend setup
+
+```sh
+cd backend
+npm install
+cp config.json.example config.json
+# edit config.json: at minimum set mqtt.host / port and a user.name / pass
+node server.js
+```
+
+The server reads `backend/config.json` at startup. Open
+`http://localhost:<port>` for the slider UI.
+
+## Firmware setup
+
+Both firmwares use PlatformIO:
+
+```sh
+# bridge
+cd lampBridge
+cp src/credentials.h.example src/credentials.h   # set mqttClientId, etc.
+pio run -t upload
+
+# unit
+cd ../lampUnit
+cp src/credentials.h.example src/credentials.h
+pio run -t upload
+```
+
+On first boot the bridge starts a WiFi AP named `InsectLampAP`; connect to it
+to provision WiFi credentials via WiFiManager.
+
+## Security
+
+- The MQTT broker should require TLS + auth for any non-LAN deployment. The
+  bridge ships a `letsencrypt.h` CA bundle for `mqtts://` use; toggle the
+  `mqtts` block in `lampBridge/src/main.cpp` once your broker is configured.
+- **The LoRa link is currently unencrypted.** Anyone in range can replay or
+  inject `setPower` payloads. See the `TODO: encrypt LoRa payload` markers in
+  `lampBridge/src/main.cpp` and `lampUnit/src/main.cpp`. A symmetric scheme
+  (AES-128 with a shared key in `credentials.h`) is the smallest fix.
+- `backend/config.json` and `*/src/credentials.h` are gitignored. Never commit
+  them.
