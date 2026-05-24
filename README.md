@@ -36,7 +36,7 @@ Topics:
 | `backend/`     | Node.js server + browser UI (Express, mqtt.js, jQuery). |
 | `lampBridge/`  | PlatformIO firmware for the WiFi/MQTT ↔ LoRa bridge.    |
 | `lampUnit/`    | PlatformIO firmware for a LoRa-only lamp unit.          |
-| `design/`      | Hardware design (LED holder).                           |
+| `design/`      | Hardware design (LED holder; `ledholder/` v1, `ledholder_v2/` v2). |
 | `docs/`        | Reference photos and pinouts.                           |
 
 ## Hardware
@@ -47,6 +47,31 @@ Topics:
 - **Power LEDs:** 4 channels, each PWM-driven (8-bit, 10 kHz). Default GPIO map:
   - Bridge: `42, 46, 45, 41` (LEDC channels `0..3`).
   - Unit:   `41, 45, 46, 42` (LEDC channels `0..3`).
+
+### LED holder
+
+- `design/ledholder/` — v1: basic 60×30 mm two-part snap housing (STL only).
+- `design/ledholder_v2/led_holder_v2.scad` — v2: parametric OpenSCAD redesign.
+  All key dimensions (housing size, fin count, screw size, pole diameter,
+  tilt detents, channel count, etc.) are variables at the top of the file.
+  Features:
+  - **Heat dissipation:** external vertical heatsink fins along the long axis,
+    thickened LED-side floor as a heat spreader, side ventilation slots.
+  - **Cable management:** strain-relief clamping slot at the entry, grommet
+    groove for weatherproofing, zip-tie anchor, and four internal rib-pairs
+    that keep each channel's wire pair separated and away from the LED zone.
+  - **Mounting:** parametric pole/pipe clamp (separate part), flat-mount tabs
+    with M4 screw holes, keyhole quick-attach slots, and an optional tilt
+    bracket with angle detents.
+
+  Export STLs (requires OpenSCAD on `PATH`):
+  ```sh
+  cd design/ledholder_v2
+  openscad -o top.stl    -D 'part="top"'    led_holder_v2.scad
+  openscad -o bottom.stl -D 'part="bottom"' led_holder_v2.scad
+  openscad -o clamp.stl  -D 'part="clamp"'  led_holder_v2.scad
+  openscad -o tilt.stl   -D 'part="tilt"'   led_holder_v2.scad
+  ```
 
 ## Backend setup
 
