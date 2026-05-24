@@ -71,6 +71,12 @@ void statusLed(bool newValue = false) {
 #endif
 }
 
+void setPowerLeds() {
+    for (uint8_t i = 0; i < powerLedCount; i++) {
+        ledcWrite(powerLeds[i].channel, powerLeds[i].pwm);
+    }
+}
+
 void setFlag(void) {
     transmittedFlag = true;
 }
@@ -201,12 +207,17 @@ void onMqttMessage(char* topic, byte* payload, unsigned int length) {
                 int id = atoi(kv.key().c_str());
                 int pwm = kv.value().as<int>();
 
-                if (id >= 1 && id <= 5) {  // prevent out-of-bounds
+                if (id >= 1 && id <= powerLedCount) {
                     powerLeds[id - 1].pwm = pwm;
+                } else {
+                    Serial.print(F("Ignoring out-of-range LED id: "));
+                    Serial.println(id);
                 }
             }
 
-            // send lora
+            // apply locally on the bridge's own LEDs
+            setPowerLeds();
+
             transmissionState = radio.startTransmit(payloadStr);
         }
     } else {
