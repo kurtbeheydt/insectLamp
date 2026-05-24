@@ -8,6 +8,10 @@
 #include "LoRaBoards.h"
 #include "credentials.h"
 #include "letsencrypt.h"
+#include "radio/LoRaRadio.h"
+// Other backends are available but not currently selected:
+// #include "radio/ZigbeeRadio.h"
+// #include "radio/ZWaveRadio.h"
 
 #define MODE_LORA 1
 #define MODE_WIFI 2
@@ -31,7 +35,10 @@ const uint8_t spreadingFactor = 10;
 const uint8_t syncword = 0x34;
 const uint8_t power = 20;
 
-SX1262 radio = new Module(RADIO_CS_PIN, RADIO_DIO1_PIN, RADIO_RST_PIN, RADIO_BUSY_PIN);
+// Active radio backend. Swap the type to ZigbeeRadio / ZWaveRadio once that
+// hardware is wired in (see radio/Zigbee*.h and radio/ZWave*.h).
+LoRaRadio loraRadio(frequency, bandwidth, spreadingFactor, syncword, power);
+Radio& radio = loraRadio;
 int transmissionState = RADIOLIB_ERR_NONE;
 
 volatile bool transmittedFlag = false;
@@ -218,7 +225,7 @@ void onMqttMessage(char* topic, byte* payload, unsigned int length) {
             // apply locally on the bridge's own LEDs
             setPowerLeds();
 
-            transmissionState = radio.startTransmit(payloadStr);
+            transmissionState = radio.transmit(payloadStr);
         }
     } else {
         Serial.println(F("No action specified in payload"));
@@ -267,20 +274,20 @@ void setup() {
     analogWriteFrequency(5000);
 
     if (wirelessMode == MODE_LORA || wirelessMode == MODE_BRIDGE) {
-        Serial.print(F("Lora Initializing ... "));
-        int state = radio.begin(frequency, bandwidth, spreadingFactor, 5, syncword, power);
+        Serial.print(radio.name());
+        Serial.print(F(" radio initializing ... "));
+        bool ok = radio.begin();
 
-        printResult(state == RADIOLIB_ERR_NONE);
+        printResult(ok);
 
-        if (state == RADIOLIB_ERR_NONE) {
+        if (ok) {
             Serial.println(F("success!"));
         } else {
-            Serial.print(F("failed, code "));
-            Serial.println(state);
+            Serial.println(F("failed"));
             while (true);
         }
 
-        radio.setPacketSentAction(setFlag);
+        radio.setOnPacketSent(setFlag);
     }
     if (wirelessMode == MODE_WIFI || wirelessMode == MODE_BRIDGE) {
         Serial.println(F("Starting WiFi Manager..."));
