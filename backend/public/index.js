@@ -1,9 +1,3 @@
-/*var client = mqtt.connect("wss://mqtt.allesaanelkaar.be/mqtt", {
-  username: "InsectLampClient",
-  password: "peterKurt"
-});
-*/
-
 var client = mqtt.connect("ws://allesaanelkaar.be:9102");
 
 var ledCount = 4;

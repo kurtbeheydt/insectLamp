@@ -1,7 +1,15 @@
 {
-    "user": {
-        "name": "",
-        "pass": ""
-    },
-    "port": 9008
+  "port": 9008,
+  "user": {
+    "name": "",
+    "pass": ""
+  },
+  "mqtt": {
+    "host": "allesaanelkaar.be",
+    "port": 8889,
+    "protocol": "mqtt",
+    "username": "",
+    "password": "",
+    "clientId": "insectLampServer"
+  }
 }

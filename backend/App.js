@@ -17,15 +17,25 @@ function Powerled(id, name) {
 
 var App = {
   mqttClient: false,
+  mqttConnected: false,
   powerLeds: [],
   presets: [],
-  
 
   init(mqttClient, callback) {
     this.mqttClient = mqttClient;
 
-    this.mqttClient.on("connect", function () {
+    this.mqttClient.on("connect", () => {
+      this.mqttConnected = true;
       console.log("mqtt connected");
+    });
+
+    this.mqttClient.on("reconnect", () => {
+      console.log("mqtt reconnecting");
+    });
+
+    this.mqttClient.on("close", () => {
+      this.mqttConnected = false;
+      console.log("mqtt disconnected");
     });
 
     this.mqttClient.on("error", function (error) {
