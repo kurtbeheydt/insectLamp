@@ -151,8 +151,11 @@ void processPayload(const String& payloadStr) {
                 int id = atoi(kv.key().c_str());
                 int pwm = kv.value().as<int>();
 
-                if (id >= 1 && id <= 5) {  // prevent out-of-bounds
+                if (id >= 1 && id <= powerLedCount) {
                     powerLeds[id - 1].pwm = pwm;
+                } else {
+                    Serial.print(F("Ignoring out-of-range LED id: "));
+                    Serial.println(id);
                 }
             }
 

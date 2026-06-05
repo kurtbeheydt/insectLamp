@@ -23,22 +23,20 @@ app.get("/", function (req, res) {
 
 var http = require("http").createServer(app);
 
-/*
 var mqttOptions = {
   host: config.mqtt.host,
   port: config.mqtt.port,
-  username: config.mqtt.username,
-  password: config.mqtt.password,
-  clientId: config.mqtt.clientId,
-  protocol: "mqtts"
+  protocol: config.mqtt.protocol || "mqtt"
 };
-*/
 
-var mqttOptions = {
-  host: "allesaanelkaar.be",
-  port: 8889,
-  protocol: "mqtt"
-};
+if (config.mqtt.username) {
+  mqttOptions.username = config.mqtt.username;
+  mqttOptions.password = config.mqtt.password;
+}
+
+if (config.mqtt.clientId) {
+  mqttOptions.clientId = config.mqtt.clientId;
+}
 
 mqttClient = mqtt.connect(mqttOptions);
 
